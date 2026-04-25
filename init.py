@@ -70,6 +70,17 @@ def create_database():
             user TEXT NOT NULL,
             FOREIGN KEY(iid) REFERENCES items(iid)
         );"""
+        #coaching payments
+        """ CREATE TABLE IF NOT EXISTS coaching_payments
+        (
+            cp_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cid INTEGER NOT NULL,
+            payment_date TEXT NOT NULL,
+            amount INTEGER NOT NULL,
+            cash_card BIT NOT NULL,
+            notes TEXT,
+            FOREIGN KEY(cid) REFERENCES coaching(cid)
+        );"""
     )
     
     

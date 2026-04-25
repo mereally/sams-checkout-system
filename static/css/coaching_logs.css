@@ -1,0 +1,305 @@
+/* Coaching Logs Page Styles */
+
+.coaching-logs-container {
+    padding: 20px 0;
+}
+
+/* Calendar Sidebar */
+.calendar-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.calendar-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Available Dates List */
+.available-dates h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.dates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.date-item {
+    padding: 10px 12px;
+    border-radius: 4px;
+    background: #f5f5f5;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+    font-size: 0.95rem;
+}
+
+.date-item:hover {
+    background: #efefef;
+    border-left-color: #0066cc;
+}
+
+.date-item.active {
+    background: #0066cc;
+    color: white;
+    border-left-color: #0066cc;
+    font-weight: 600;
+}
+
+.date-text {
+    display: block;
+}
+
+/* Logs Display */
+.logs-card {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.logs-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.logs-header .badge {
+    font-size: 0.95rem;
+    padding: 6px 12px;
+}
+
+.logs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Log Entry */
+.log-entry {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 18px;
+    background: #fafafa;
+    transition: all 0.2s;
+}
+
+.log-entry:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #d0d0d0;
+}
+
+.log-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.log-datetime {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    min-width: 140px;
+}
+
+.log-date {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+}
+
+.log-time {
+    color: #666;
+    font-size: 0.85rem;
+    background: #e8e8e8;
+    padding: 3px 8px;
+    border-radius: 3px;
+}
+
+.log-member {
+    flex: 1;
+    min-width: 180px;
+}
+
+.member-badge {
+    background: #e8f1ff;
+    color: #0066cc;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.log-payment {
+    display: flex;
+    align-items: center;
+}
+
+.payment-badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.payment-badge.badge-cash {
+    background: #d4edda;
+    color: #155724;
+}
+
+.payment-badge.badge-card {
+    background: #cfe2ff;
+    color: #084298;
+}
+
+.log-amount {
+    min-width: 100px;
+    text-align: right;
+}
+
+.log-amount .amount {
+    color: #0066cc;
+    font-size: 1.1rem;
+}
+
+/* Log Notes */
+.log-notes {
+    margin-top: 12px;
+    padding: 10px;
+    background: white;
+    border-radius: 3px;
+    border-left: 3px solid #ffc107;
+    font-size: 0.9rem;
+}
+
+.notes-label {
+    font-weight: 600;
+    color: #555;
+    margin-right: 8px;
+}
+
+.notes-text {
+    color: #333;
+    font-style: italic;
+}
+
+/* Summary Stats */
+.summary-stats {
+    margin-top: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 6px;
+    border-top: 2px solid #0066cc;
+}
+
+.summary-stats h5 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e8e8e8;
+    font-size: 0.95rem;
+}
+
+.stats-row:last-child {
+    border-bottom: none;
+}
+
+.stats-row span:first-child {
+    font-weight: 600;
+    color: #555;
+}
+
+.stat-value {
+    color: #0066cc;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+/* Alert Styles */
+.alert-info {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    border-radius: 4px;
+    padding: 15px;
+    text-align: center;
+}
+
+/* Scrollbar Styling */
+.dates-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dates-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.dates-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.dates-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .log-header-row {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .log-datetime,
+    .log-member,
+    .log-payment,
+    .log-amount {
+        min-width: 100%;
+        justify-content: space-between;
+    }
+
+    .log-header-row {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .log-entry {
+        padding: 15px;
+    }
+}

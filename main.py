@@ -141,13 +141,13 @@ def add_custom_order_direct():
         
         if not description:
             flash('Order description is required', 'danger')
-            return redirect(url_for('checkout'))
+            return redirect(url_for('custom_orders'))
         
         try:
             price_cents = int(float(price) * 100) if price else 0
         except ValueError:
             flash('Invalid price format', 'danger')
-            return redirect(url_for('checkout'))
+            return redirect(url_for('custom_orders'))
         
         # Save to database for logging
         conn = get_db()
@@ -162,30 +162,19 @@ def add_custom_order_direct():
                            (description, price_cents)).fetchone()
         conn.close()
         
-        # Initialize cart in session if needed
-        if 'cart' not in session:
-            session['cart'] = []
-        
-        # Remove any previous custom orders from cart (keep only regular items)
-        session['cart'] = [item for item in session['cart'] if item.get('type') != 'custom_order']
-        
-        # Add the new custom order to cart
-        cart_item = {
-            'type': 'custom_order',
+        # Store custom order in session as PENDING - only added to cart when checkout page loads
+        session['pending_custom_order'] = {
             'id': order['coid'] if order else None,
             'description': description,
-            'price': price_cents,
-            'quantity': 1
+            'price': price_cents
         }
-        
-        session['cart'].append(cart_item)
         session.modified = True
         
-        flash(f'Custom order added to cart!', 'success')
-        return redirect(url_for('checkout'))
+        flash(f'Custom order "{description}" added! Go to Checkout to complete your purchase.', 'success')
+        return redirect(url_for('custom_orders'))
     except Exception as e:
         flash(f'Error adding to cart: {str(e)}', 'danger')
-        return redirect(url_for('checkout'))
+        return redirect(url_for('custom_orders'))
 
 @app.route('/checkout', methods=['GET'])
 def checkout():
@@ -198,6 +187,19 @@ def checkout():
     
     # Get cart from session if it exists
     session_cart = session.get('cart', [])
+    
+    # Check if there's a pending custom order to add
+    if 'pending_custom_order' in session:
+        pending = session.pop('pending_custom_order')
+        cart_item = {
+            'type': 'custom_order',
+            'id': pending['id'],
+            'description': pending['description'],
+            'price': pending['price'],
+            'quantity': 1
+        }
+        session_cart.append(cart_item)
+        session.modified = True
     
     return render_template('checkout.html', items=items, strings=strings, walkin=walkin_pricing, session_cart=session_cart)
 
@@ -252,7 +254,182 @@ def complete_checkout():
     except Exception as e:
         flash(f'Error processing checkout: {str(e)}', 'danger')
         return redirect(url_for('checkout'))
+
+# COACHING ROUTES
+@app.route('/coaching', methods=['GET', 'POST'])
+def coaching():
+    search_query = request.args.get('search', '').strip()
+    search_result = None
+    
+    if request.method == 'POST':
+        try:
+            name = request.form['name']
+            coach = request.form['coach']
+            coaching_time = request.form['coaching_time']
+            phone_number = request.form['phone_number']
+            coaching_type = request.form['coaching_type']
+            member = 1 if request.form.get('member') else 0
+            
+            if not name or not coach or not coaching_type:
+                flash('Name, Coach, and Coaching Type are required', 'danger')
+                return redirect(url_for('coaching'))
+            
+            conn = get_db()
+            conn.execute(
+                'INSERT INTO coaching (name, coach, coaching_time, phone_number, total_payment, coaching_type, member) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (name, coach, coaching_time, int(phone_number) if phone_number else 0, 0, coaching_type, member)
+            )
+            conn.commit()
+            conn.close()
+            
+            flash(f'Coaching member "{name}" added successfully!', 'success')
+            return redirect(url_for('coaching'))
+        except Exception as e:
+            flash(f'Error adding coaching member: {str(e)}', 'danger')
+            return redirect(url_for('coaching'))
+    
+    # Search functionality
+    if search_query:
+        conn = get_db()
+        # Search by name in coaching table
+        search_result = conn.execute(
+            'SELECT * FROM coaching WHERE name LIKE ? ORDER BY name ASC',
+            (f'%{search_query}%',)
+        ).fetchall()
+        
+        # Fetch payment information for each result
+        results_with_payments = []
+        for person in search_result:
+            payments = conn.execute(
+                'SELECT * FROM coaching_payments WHERE cid = ? ORDER BY payment_date DESC',
+                (person['cid'],)
+            ).fetchall()
+            
+            total_paid = sum(p['amount'] for p in payments)
+            results_with_payments.append({
+                'person': person,
+                'payments': payments,
+                'total_paid': total_paid,
+                'payment_count': len(payments)
+            })
+        
+        conn.close()
+        search_result = results_with_payments
+    
+    return render_template('coaching.html', search_result=search_result, search_query=search_query)
+
+@app.route('/coaching/<int:person_id>/add-payment', methods=['POST'])
+def add_coaching_payment(person_id):
+    try:
+        amount = int(float(request.form.get('amount', 0)) * 100)
+        payment_method = int(request.form.get('payment_method', 0))  # 0 = cash, 1 = card
+        notes = request.form.get('notes', '').strip()
+        
+        if amount <= 0:
+            flash('Payment amount must be greater than 0', 'danger')
+            return redirect(url_for('coaching', search=request.form.get('search', '')))
+        
+        conn = get_db()
+        
+        # Get the person's details
+        person = conn.execute('SELECT * FROM coaching WHERE cid = ?', (person_id,)).fetchone()
+        if not person:
+            flash('Person not found', 'danger')
+            conn.close()
+            return redirect(url_for('coaching'))
+        
+        # Add payment record
+        now = datetime.now()
+        payment_date = now.strftime('%Y-%m-%d %H:%M:%S')
+        
+        conn.execute(
+            'INSERT INTO coaching_payments (cid, payment_date, amount, cash_card, notes) VALUES (?, ?, ?, ?, ?)',
+            (person_id, payment_date, amount, payment_method, notes)
+        )
+        
+        # Update total payment in coaching table
+        total_paid = conn.execute(
+            'SELECT COALESCE(SUM(amount), 0) as total FROM coaching_payments WHERE cid = ?',
+            (person_id,)
+        ).fetchone()['total']
+        
+        conn.execute(
+            'UPDATE coaching SET total_payment = ? WHERE cid = ?',
+            (total_paid + amount, person_id)
+        )
+        
+        # Also log in checkout table for general records
+        conn.execute(
+            'INSERT INTO checkout (checkout_date, total_price, cash_card, iid, discount, user) VALUES (?, ?, ?, ?, ?, ?)',
+            (payment_date, amount, payment_method, None, 0, f'COACHING_PAYMENT:{person["name"]}')
+        )
+        
+        conn.commit()
+        conn.close()
+        
+        flash(f'Payment of ${amount / 100:.2f} recorded for {person["name"]}!', 'success')
+    except Exception as e:
+        flash(f'Error recording payment: {str(e)}', 'danger')
+    
+    return redirect(url_for('coaching', search=request.form.get('search', '')))
+
+@app.route('/coaching/<int:person_id>/delete', methods=['POST'])
+def delete_coaching_member(person_id):
+    try:
+        conn = get_db()
+        
+        # Get person name for flash message
+        person = conn.execute('SELECT name FROM coaching WHERE cid = ?', (person_id,)).fetchone()
+        
+        # Delete associated payments
+        conn.execute('DELETE FROM coaching_payments WHERE cid = ?', (person_id,))
+        
+        # Delete coaching member
+        conn.execute('DELETE FROM coaching WHERE cid = ?', (person_id,))
+        
+        conn.commit()
+        conn.close()
+        
+        flash(f'Coaching member "{person["name"]}" deleted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error deleting coaching member: {str(e)}', 'danger')
+    
+    return redirect(url_for('coaching'))
+
+# COACHING LOGS ROUTES
+@app.route('/coaching-logs', methods=['GET'])
+def coaching_logs():
+    selected_date = request.args.get('date')
+    
+    conn = get_db()
+    
+    # Get all coaching payment transactions
+    if selected_date:
+        # Filter by selected date
+        all_payments = conn.execute(
+            'SELECT cp.*, c.name as coaching_name FROM coaching_payments cp JOIN coaching c ON cp.cid = c.cid WHERE cp.payment_date LIKE ? ORDER BY cp.payment_date DESC',
+            (f'{selected_date}%',)
+        ).fetchall()
+    else:
+        # Show all coaching payment entries
+        all_payments = conn.execute(
+            'SELECT cp.*, c.name as coaching_name FROM coaching_payments cp JOIN coaching c ON cp.cid = c.cid ORDER BY cp.payment_date DESC'
+        ).fetchall()
+    
+    # Get unique dates for calendar
+    all_dates = conn.execute(
+        'SELECT DISTINCT DATE(payment_date) as payment_date FROM coaching_payments ORDER BY payment_date DESC'
+    ).fetchall()
+    
+    conn.close()
+    
+    # Convert dates to list
+    available_dates = [row[0] for row in all_dates]
+    
+    return render_template('coaching_logs.html', payments=all_payments, available_dates=available_dates, selected_date=selected_date)
+
 # LOGS ROUTES
+
 @app.route('/logs', methods=['GET'])
 def logs():
     selected_date = request.args.get('date')

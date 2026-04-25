@@ -1,18 +1,33 @@
 /* Items Page Styling - Tab Navigation Only */
+.nav-tabs {
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+
 .nav-tabs .nav-link {
     color: #666 !important;
     font-size: 1rem !important;
     font-weight: 600 !important;
     padding: 0.75rem 1.5rem !important;
-}
-
-.nav-tabs .nav-link.active {
-    color: #0d6efd !important;
-    border-bottom: 3px solid #0d6efd !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    transition: all 0.3s ease !important;
+    position: relative;
 }
 
 .nav-tabs .nav-link:hover {
     color: #0d6efd !important;
+    border-bottom-color: #0d6efd !important;
+    background-color: #f8f9fa;
+}
+
+.nav-tabs .nav-link.active {
+    color: #fff !important;
+    background-color: #0d6efd !important;
+    border-bottom-color: #0d6efd !important;
+    border-radius: 4px 4px 0 0 !important;
+    padding: 0.75rem 1.5rem !important;
+    box-shadow: 0 -2px 8px rgba(13, 110, 253, 0.2) !important;
 }
 
 /* Items table wrapper styling */

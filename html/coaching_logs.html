@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Coaching Logs - Sam's Checkout System{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/coaching_logs.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="coaching-logs-container">
+    <div class="row">
+        <!-- Calendar Sidebar -->
+        <div class="col-lg-3">
+            <div class="calendar-card">
+                <h3>Select Date</h3>
+                
+                <!-- Available Dates List -->
+                <div class="available-dates">
+                    <h5>Payment Dates</h5>
+                    <div class="dates-list">
+                        {% if available_dates %}
+                            {% for date in available_dates %}
+                                <a href="{{ url_for('coaching_logs', date=date) }}" 
+                                   class="date-item {% if selected_date == date %}active{% endif %}">
+                                    <span class="date-text">{{ date }}</span>
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No coaching payments recorded yet</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Clear Filter Button -->
+                {% if selected_date %}
+                    <div class="mt-3">
+                        <a href="{{ url_for('coaching_logs') }}" class="btn btn-secondary w-100">
+                            Clear Filter
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Logs Display -->
+        <div class="col-lg-9">
+            <div class="logs-card">
+                <div class="logs-header">
+                    <h2>Coaching Payment Logs</h2>
+                    {% if selected_date %}
+                        <span class="badge bg-primary">{{ selected_date }}</span>
+                    {% else %}
+                        <span class="badge bg-info">All Payments</span>
+                    {% endif %}
+                </div>
+
+                {% if payments %}
+                    <div class="logs-list">
+                        {% for payment in payments %}
+                            <div class="log-entry">
+                                <div class="log-header-row">
+                                    <div class="log-datetime">
+                                        <span class="log-date">{{ payment['payment_date'][:10] }}</span>
+                                        <span class="log-time">{{ payment['payment_date'][11:19] }}</span>
+                                    </div>
+                                    <div class="log-member">
+                                        <span class="member-badge">👤 {{ payment['coaching_name'] }}</span>
+                                    </div>
+                                    <div class="log-payment">
+                                        <span class="payment-badge {% if payment['cash_card'] == 1 %}badge-card{% else %}badge-cash{% endif %}">
+                                            {% if payment['cash_card'] == 1 %}💳 Card{% else %}💵 Cash{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="log-amount">
+                                        <strong class="amount">${{ "%.2f"|format(payment['amount'] / 100) }}</strong>
+                                    </div>
+                                </div>
+
+                                {% if payment['notes'] %}
+                                <div class="log-notes">
+                                    <span class="notes-label">Notes:</span>
+                                    <span class="notes-text">{{ payment['notes'] }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <!-- Summary Stats -->
+                        <div class="summary-stats">
+                            <h5>Summary</h5>
+                            <div class="stats-row">
+                                <span>Total Payments:</span>
+                                <span class="stat-value">${{ "%.2f"|format(payments|sum(attribute='amount') / 100) }}</span>
+                            </div>
+                            <div class="stats-row">
+                                <span>Payment Count:</span>
+                                <span class="stat-value">{{ payments|length }}</span>
+                            </div>
+                            
+                            {% set cash_payments = payments|selectattr('cash_card', 'equalto', 0)|list %}
+                            {% set card_payments = payments|selectattr('cash_card', 'equalto', 1)|list %}
+                            
+                            {% if cash_payments %}
+                            <div class="stats-row">
+                                <span>💵 Cash:</span>
+                                <span class="stat-value">${{ "%.2f"|format(cash_payments|sum(attribute='amount') / 100) }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            {% if card_payments %}
+                            <div class="stats-row">
+                                <span>💳 Card:</span>
+                                <span class="stat-value">${{ "%.2f"|format(card_payments|sum(attribute='amount') / 100) }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        {% if selected_date %}
+                            No coaching payments recorded for {{ selected_date }}
+                        {% else %}
+                            No coaching payments recorded yet
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

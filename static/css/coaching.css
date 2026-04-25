@@ -1,0 +1,317 @@
+/* Coaching Page Styles */
+
+.coaching-container {
+    padding: 20px 0;
+}
+
+/* Form Card */
+.form-card {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.form-card h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-card .form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.form-card .form-control,
+.form-card .form-select {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.form-card .form-control:focus,
+.form-card .form-select:focus {
+    border-color: #0066cc;
+    box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.25);
+}
+
+.form-card .btn-primary {
+    background: #0066cc;
+    border: none;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.form-card .btn-primary:hover {
+    background: #0052a3;
+}
+
+/* Search Card */
+.search-card {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-card h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.search-input {
+    border: 1px solid #ddd !important;
+    border-radius: 4px 0 0 4px !important;
+    font-size: 0.95rem;
+    padding: 10px 15px !important;
+}
+
+.search-input:focus {
+    border-color: #0066cc !important;
+}
+
+.search-card .btn-primary {
+    background: #0066cc;
+    border: 1px solid #0066cc;
+    border-radius: 0 4px 4px 0;
+    font-weight: 600;
+    padding: 10px 20px;
+}
+
+.search-card .btn-primary:hover {
+    background: #0052a3;
+    border-color: #0052a3;
+}
+
+.search-card .btn-secondary {
+    border-radius: 0 4px 4px 0;
+    border-left: 1px solid #ddd;
+}
+
+/* Search Results */
+.search-results {
+    margin-top: 20px;
+}
+
+.results-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+/* Member Card */
+.member-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 15px;
+    background: #fafafa;
+    transition: all 0.2s;
+}
+
+.member-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #d0d0d0;
+}
+
+.member-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.member-info {
+    flex: 1;
+}
+
+.member-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.member-meta {
+    margin: 0;
+    display: flex;
+    gap: 8px;
+}
+
+.member-meta .badge {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+}
+
+.member-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.member-actions .btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+/* Member Details */
+.member-details {
+    margin-bottom: 15px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #555;
+    min-width: 120px;
+}
+
+.detail-value {
+    color: #333;
+    text-align: right;
+    flex: 1;
+}
+
+.detail-value.amount {
+    color: #0066cc;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* Payment History */
+.payment-history {
+    margin: 15px 0;
+    padding: 15px;
+    background: white;
+    border-radius: 4px;
+    border-left: 3px solid #0066cc;
+}
+
+.payment-history h6 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.payments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.payment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background: #f9f9f9;
+    border-radius: 3px;
+    font-size: 0.9rem;
+}
+
+.payment-date {
+    color: #666;
+    font-size: 0.85rem;
+    min-width: 100px;
+}
+
+.payment-amount {
+    font-weight: 600;
+    color: #0066cc;
+    flex: 1;
+    text-align: center;
+}
+
+.payment-method {
+    font-size: 1rem;
+}
+
+/* Add Payment Section */
+.add-payment-section {
+    margin-top: 15px;
+    padding: 12px;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+}
+
+.add-payment-section h6 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.payment-form input,
+.payment-form select {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 0.85rem;
+}
+
+.payment-form input:focus,
+.payment-form select:focus {
+    border-color: #0066cc;
+    outline: none;
+    box-shadow: 0 0 0 0.1rem rgba(0, 102, 204, 0.25);
+}
+
+.payment-form .btn-success {
+    background: #28a745;
+    border: none;
+    font-weight: 600;
+}
+
+.payment-form .btn-success:hover {
+    background: #218838;
+}
+
+/* No results alert */
+.alert-info {
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    color: #0c5460;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .member-header {
+        flex-direction: column;
+    }
+
+    .member-actions {
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .member-actions .btn {
+        width: 100%;
+    }
+}

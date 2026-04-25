@@ -1,0 +1,84 @@
+/* Custom Orders Page Styling */
+
+.form-card {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-card h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-card .form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.form-card .form-control {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.form-card .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-card .btn-primary {
+    background: #0d6efd;
+    border: none;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.form-card .btn-primary:hover {
+    background: #0b5ed7;
+}
+
+/* Navigation Card */
+.navigation-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #28a745;
+}
+
+.navigation-card h5 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+.navigation-card p {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+}
+
+.navigation-card .btn-success {
+    background: #28a745;
+    border: none;
+    font-weight: 600;
+    padding: 10px 20px;
+    transition: all 0.2s;
+}
+
+.navigation-card .btn-success:hover {
+    background: #218838;
+}
+
+.navigation-card .btn-success:active {
+    background: #1e7e34;
+}
