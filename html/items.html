@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Items - Sam's Checkout System{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/items.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6">
+        <div class="form-card">
+            <h2>Create New Item</h2>
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Item Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="type" class="form-label">Item Type <span class="text-danger">*</span></label>
+                    <select class="form-select" id="type" name="type" required>
+                        <option value="">Select a type...</option>
+                        <option value="fridge">Fridge</option>
+                        <option value="hire">Hire</option>
+                        <option value="physical">Physical</option>
+                        <option value="shuttles">Shuttles</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="number" class="form-control" id="price" name="price" step="0.01" min="0">
+                </div>
+                <button type="submit" class="btn btn-primary">Create Item</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="table-card">
+            <h2>Items List</h2>
+            
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs mb-3" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="fridge-tab" data-bs-toggle="tab" data-bs-target="#fridge-content" type="button" role="tab" aria-controls="fridge-content" aria-selected="true">
+                        <strong>Fridge</strong>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="physical-tab" data-bs-toggle="tab" data-bs-target="#physical-content" type="button" role="tab" aria-controls="physical-content" aria-selected="false">
+                        <strong>Physical</strong>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="hire-tab" data-bs-toggle="tab" data-bs-target="#hire-content" type="button" role="tab" aria-controls="hire-content" aria-selected="false">
+                        <strong>Hire</strong>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="shuttles-tab" data-bs-toggle="tab" data-bs-target="#shuttles-content" type="button" role="tab" aria-controls="shuttles-content" aria-selected="false">
+                        <strong>Shuttles</strong>
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Fridge Tab -->
+                <div class="tab-pane fade show active" id="fridge-content" role="tabpanel">
+                    {% set fridge_items = items|selectattr('type', 'equalto', 'fridge')|list %}
+                    {% if fridge_items %}
+                        <div class="search-box">
+                            <input type="text" class="fridge-search form-control" placeholder="Search items...">
+                        </div>
+                        <div class="items-table-wrapper">
+                            <table class="table table-striped fridge-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in fridge_items %}
+                                        <tr>
+                                            <td>{{ item['iid'] }}</td>
+                                            <td class="item-name-cell">{{ item['name'] }}</td>
+                                            <td>
+                                                {% if item['price'] %}
+                                                    ${{ "%.2f"|format(item['price'] / 100) }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <form method="POST" action="{{ url_for('delete_item', item_id=item['iid']) }}" style="display:inline;">
+                                                    <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Are you sure?')">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No fridge items added yet.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Physical Tab -->
+                <div class="tab-pane fade" id="physical-content" role="tabpanel">
+                    {% set physical_items = items|selectattr('type', 'equalto', 'physical')|list %}
+                    {% if physical_items %}
+                        <div class="search-box">
+                            <input type="text" class="physical-search form-control" placeholder="Search items...">
+                        </div>
+                        <div class="items-table-wrapper">
+                            <table class="table table-striped physical-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in physical_items %}
+                                        <tr>
+                                            <td>{{ item['iid'] }}</td>
+                                            <td class="item-name-cell">{{ item['name'] }}</td>
+                                            <td>
+                                                {% if item['price'] %}
+                                                    ${{ "%.2f"|format(item['price'] / 100) }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <form method="POST" action="{{ url_for('delete_item', item_id=item['iid']) }}" style="display:inline;">
+                                                    <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Are you sure?')">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No physical items added yet.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Hire Tab -->
+                <div class="tab-pane fade" id="hire-content" role="tabpanel">
+                    {% set hire_items = items|selectattr('type', 'equalto', 'hire')|list %}
+                    {% if hire_items %}
+                        <div class="search-box">
+                            <input type="text" class="hire-search form-control" placeholder="Search items...">
+                        </div>
+                        <div class="items-table-wrapper">
+                            <table class="table table-striped hire-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in hire_items %}
+                                        <tr>
+                                            <td>{{ item['iid'] }}</td>
+                                            <td class="item-name-cell">{{ item['name'] }}</td>
+                                            <td>
+                                                {% if item['price'] %}
+                                                    ${{ "%.2f"|format(item['price'] / 100) }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <form method="POST" action="{{ url_for('delete_item', item_id=item['iid']) }}" style="display:inline;">
+                                                    <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Are you sure?')">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No hire items added yet.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Shuttles Tab -->
+                <div class="tab-pane fade" id="shuttles-content" role="tabpanel">
+                    {% set shuttles_items = items|selectattr('type', 'equalto', 'shuttles')|list %}
+                    {% if shuttles_items %}
+                        <div class="search-box">
+                            <input type="text" class="shuttles-search form-control" placeholder="Search items...">
+                        </div>
+                        <div class="items-table-wrapper">
+                            <table class="table table-striped shuttles-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in shuttles_items %}
+                                        <tr>
+                                            <td>{{ item['iid'] }}</td>
+                                            <td class="item-name-cell">{{ item['name'] }}</td>
+                                            <td>
+                                                {% if item['price'] %}
+                                                    ${{ "%.2f"|format(item['price'] / 100) }}
+                                                {% else %}
+                                                    -
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <form method="POST" action="{{ url_for('delete_item', item_id=item['iid']) }}" style="display:inline;">
+                                                    <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Are you sure?')">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No shuttles added yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Search functionality for items tabs
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fridge tab search
+        const fridgeSearch = document.querySelector('.fridge-search');
+        const fridgeTable = document.querySelector('.fridge-table');
+        if (fridgeSearch && fridgeTable) {
+            fridgeSearch.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = fridgeTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                Array.from(rows).forEach(row => {
+                    const nameCell = row.querySelector('.item-name-cell');
+                    if (nameCell) {
+                        const itemName = nameCell.textContent.toLowerCase();
+                        row.style.display = itemName.includes(searchTerm) ? '' : 'none';
+                    }
+                });
+            });
+        }
+
+        // Physical tab search
+        const physicalSearch = document.querySelector('.physical-search');
+        const physicalTable = document.querySelector('.physical-table');
+        if (physicalSearch && physicalTable) {
+            physicalSearch.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = physicalTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                Array.from(rows).forEach(row => {
+                    const nameCell = row.querySelector('.item-name-cell');
+                    if (nameCell) {
+                        const itemName = nameCell.textContent.toLowerCase();
+                        row.style.display = itemName.includes(searchTerm) ? '' : 'none';
+                    }
+                });
+            });
+        }
+
+        // Hire tab search
+        const hireSearch = document.querySelector('.hire-search');
+        const hireTable = document.querySelector('.hire-table');
+        if (hireSearch && hireTable) {
+            hireSearch.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = hireTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                Array.from(rows).forEach(row => {
+                    const nameCell = row.querySelector('.item-name-cell');
+                    if (nameCell) {
+                        const itemName = nameCell.textContent.toLowerCase();
+                        row.style.display = itemName.includes(searchTerm) ? '' : 'none';
+                    }
+                });
+            });
+        }
+
+        // Shuttles tab search
+        const shuttlesSearch = document.querySelector('.shuttles-search');
+        const shuttlesTable = document.querySelector('.shuttles-table');
+        if (shuttlesSearch && shuttlesTable) {
+            shuttlesSearch.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = shuttlesTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                Array.from(rows).forEach(row => {
+                    const nameCell = row.querySelector('.item-name-cell');
+                    if (nameCell) {
+                        const itemName = nameCell.textContent.toLowerCase();
+                        row.style.display = itemName.includes(searchTerm) ? '' : 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

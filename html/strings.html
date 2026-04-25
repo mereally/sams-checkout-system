@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Strings - Sam's Checkout System{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/strings.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6">
+        <div class="form-card">
+            <h2>Add String Type</h2>
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="string_type" class="form-label">String Type <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="string_type" name="string_type" placeholder="" required>
+                </div>
+                <div class="mb-3">
+                    <label for="string_price" class="form-label">Price</label>
+                    <input type="number" class="form-control" id="string_price" name="string_price" step="0.01" min="0" placeholder="Price per unit">
+                </div>
+                <div class="mb-3">
+                    <label for="member_price" class="form-label">Member Price</label>
+                    <input type="number" class="form-control" id="member_price" name="member_price" step="0.01" min="0" placeholder="Member price per unit">
+                </div>
+                <button type="submit" class="btn btn-primary">Add String</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="table-card">
+            <h2>Available Strings</h2>
+            {% if strings %}
+                <div class="search-box">
+                    <input type="text" id="stringSearchInput" placeholder="Search strings by type..." class="form-control">
+                </div>
+                <div class="string-table-wrapper">
+                    <table class="table table-striped" id="stringsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>String Type</th>
+                                <th>Price</th>
+                                <th>Member Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for string in strings %}
+                                <tr>
+                                    <td>{{ string['sid'] }}</td>
+                                    <td class="string-type-cell">{{ string['string_type'] }}</td>
+                                    <td>
+                                        {% if string['string_price'] %}
+                                            ${{ "%.2f"|format(string['string_price'] / 100) }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if string['member_price'] %}
+                                            ${{ "%.2f"|format(string['member_price'] / 100) }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <form method="POST" action="{{ url_for('delete_string', string_id=string['sid']) }}" style="display:inline;">
+                                            <button type="submit" class="btn btn-sm btn-delete" onclick="return confirm('Are you sure?')">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">No strings added yet. Add one to get started!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Search functionality for strings
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('stringSearchInput');
+        const stringsTable = document.getElementById('stringsTable');
+        
+        if (searchInput && stringsTable) {
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const tableRows = stringsTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                
+                Array.from(tableRows).forEach(row => {
+                    const stringTypeCell = row.querySelector('.string-type-cell');
+                    if (stringTypeCell) {
+                        const stringType = stringTypeCell.textContent.toLowerCase();
+                        row.style.display = stringType.includes(searchTerm) ? '' : 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

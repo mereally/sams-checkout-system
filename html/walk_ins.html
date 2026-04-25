@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Walk-Ins - Sam's Checkout System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="form-card">
+            <h2>Record Walk-In</h2>
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="peak_offpeak" class="form-label">Time Period <span class="text-danger">*</span></label>
+                    <select class="form-select" id="peak_offpeak" name="peak_offpeak" required>
+                        <option value="">Select a time period...</option>
+                        <option value="1">Peak Hours - $35.00</option>
+                        <option value="0">Off-Peak Hours - $25.00</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" placeholder="Auto-filled based on selection" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="member_price" class="form-label">Member Price</label>
+                    <input type="number" class="form-control" id="member_price" name="member_price" step="0.01" min="0" placeholder="Optional member discount">
+                </div>
+                <button type="submit" class="btn btn-primary">Record Walk-In</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const peakSelect = document.getElementById('peak_offpeak');
+        const priceInput = document.getElementById('price');
+        
+        peakSelect.addEventListener('change', function() {
+            if (this.value === '1') {
+                priceInput.value = '35.00';
+            } else if (this.value === '0') {
+                priceInput.value = '25.00';
+            } else {
+                priceInput.value = '';
+            }
+        });
+
+        // Format member price with decimal system
+        const memberPriceInput = document.getElementById('member_price');
+        memberPriceInput.addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            
+            if (value.length === 0) {
+                this.value = '';
+            } else if (value.length === 1) {
+                this.value = '0.0' + value;
+            } else if (value.length === 2) {
+                this.value = '0.' + value;
+            } else {
+                let integerPart = value.slice(0, -2);
+                const decimalPart = value.slice(-2);
+                integerPart = integerPart.replace(/^0+/, '') || '0';
+                this.value = integerPart + '.' + decimalPart;
+            }
+        });
+    });
+</script>
+{% endblock %}

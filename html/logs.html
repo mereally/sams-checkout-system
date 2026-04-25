@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Logs - Sam's Checkout System{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/logs.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="logs-container">
+    <div class="row">
+        <!-- Calendar Sidebar -->
+        <div class="col-lg-3">
+            <div class="calendar-card">
+                <h3>Select Date</h3>
+                <div id="calendar" class="calendar-widget"></div>
+                
+                <!-- Available Dates List -->
+                <div class="available-dates mt-4">
+                    <h5>Purchase Dates</h5>
+                    <div class="dates-list">
+                        {% if available_dates %}
+                            {% for date in available_dates %}
+                                <a href="{{ url_for('logs', date=date) }}" 
+                                   class="date-item {% if selected_date == date %}active{% endif %}">
+                                    <span class="date-text">{{ date }}</span>
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No purchases recorded yet</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Clear Filter Button -->
+                {% if selected_date %}
+                    <div class="mt-3">
+                        <a href="{{ url_for('logs') }}" class="btn btn-secondary w-100">
+                            Clear Filter
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Logs Display -->
+        <div class="col-lg-9">
+            <div class="logs-card">
+                <div class="logs-header">
+                    <h2>Purchase Logs</h2>
+                    {% if selected_date %}
+                        <span class="badge bg-primary">{{ selected_date }}</span>
+                    {% else %}
+                        <span class="badge bg-info">All Purchases</span>
+                    {% endif %}
+                </div>
+
+                {% if logs %}
+                    <div class="logs-list">
+                        {% for log in logs %}
+                            <div class="log-entry">
+                                <div class="log-header-row">
+                                    <div class="log-datetime">
+                                        <span class="log-date">{{ log['checkout_date'][:10] }}</span>
+                                        <span class="log-time">{{ log['checkout_date'][11:19] }}</span>
+                                    </div>
+                                    <div class="log-payment">
+                                        <span class="payment-badge {% if log['cash_card'] == 1 %}badge-card{% else %}badge-cash{% endif %}">
+                                            {% if log['cash_card'] == 1 %}💳 Card{% else %}💵 Cash{% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="log-total">
+                                        Total: <strong>{% if log['total'] %}${{ "%.2f"|format(log['total'] / 100) }}{% else %}—{% endif %}</strong>
+                                    </div>
+                                </div>
+
+                                <div class="log-items">
+                                    <h6>Items Purchased:</h6>
+                                    <ul class="items-list">
+                                        {% if log['items'] %}
+                                            {% for item in log['items'] %}
+                                                <li class="item-row">
+                                                    <span class="item-name">{{ item['name'] }}</span>
+                                                    <span class="item-price">{% if item['price'] %}${{ "%.2f"|format(item['price'] / 100) }}{% else %}—{% endif %}</span>
+                                                </li>
+                                            {% endfor %}
+                                        {% else %}
+                                            <li class="item-row text-muted">No items recorded</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+
+                                <div class="log-summary">
+                                    <div class="summary-row">
+                                        <span>Subtotal:</span>
+                                        <span>{% if log['subtotal'] %}${{ "%.2f"|format(log['subtotal'] / 100) }}{% else %}—{% endif %}</span>
+                                    </div>
+                                    {% if log['discount'] > 0 %}
+                                        <div class="summary-row discount">
+                                            <span>Discount:</span>
+                                            <span>{% if log['discount'] %}-${{ "%.2f"|format(log['discount'] / 100) }}{% else %}—{% endif %}</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="summary-row total-row">
+                                        <strong>Total:</strong>
+                                        <strong>{% if log['total'] %}${{ "%.2f"|format(log['total'] / 100) }}{% else %}—{% endif %}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <p class="text-muted">
+                            {% if selected_date %}
+                                No purchases found for {{ selected_date }}
+                            {% else %}
+                                No purchase logs available yet
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize calendar
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeCalendar();
+    });
+
+    function initializeCalendar() {
+        const calendarElement = document.getElementById('calendar');
+        const selectedDate = '{{ selected_date }}';
+        const today = new Date();
+        
+        renderCalendar(today.getFullYear(), today.getMonth(), selectedDate, calendarElement);
+    }
+
+    function renderCalendar(year, month, selectedDate, container) {
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+        const startDay = firstDay.getDay();
+
+        let html = `
+            <div class="calendar-month">
+                <div class="calendar-nav">
+                    <button class="btn-nav prev" onclick="previousMonth(this)">&#10094;</button>
+                    <div class="month-year">
+                        <span class="month-text">${new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+                    </div>
+                    <button class="btn-nav next" onclick="nextMonth(this)">&#10095;</button>
+                </div>
+                <div class="weekdays">
+                    <div class="weekday">Sun</div>
+                    <div class="weekday">Mon</div>
+                    <div class="weekday">Tue</div>
+                    <div class="weekday">Wed</div>
+                    <div class="weekday">Thu</div>
+                    <div class="weekday">Fri</div>
+                    <div class="weekday">Sat</div>
+                </div>
+                <div class="days">
+        `;
+
+        // Previous month's days
+        for (let i = startDay - 1; i >= 0; i--) {
+            html += `<div class="day other-month">${daysInPrevMonth - i}</div>`;
+        }
+
+        // Current month's days
+        const availableDates = document.querySelectorAll('.date-item .date-text');
+        const availableDatesList = Array.from(availableDates).map(el => el.textContent.trim());
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const hasData = availableDatesList.includes(dateStr);
+            const isSelected = selectedDate === dateStr;
+            const today = new Date();
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const isToday = dateStr === todayStr;
+            
+            let classes = 'day';
+            if (hasData) classes += ' has-data';
+            if (isSelected) classes += ' selected';
+            if (isToday) classes += ' today';
+            
+            const clickHandler = hasData ? `onclick="filterByDate('${dateStr}')"` : '';
+            const style = hasData ? 'cursor: pointer;' : '';
+            
+            html += `<div class="${classes}" style="${style}" ${clickHandler}>${day}</div>`;
+        }
+
+        // Next month's days
+        const totalCells = Math.ceil((startDay + daysInMonth) / 7) * 7;
+        for (let day = 1; day <= totalCells - startDay - daysInMonth; day++) {
+            html += `<div class="day other-month">${day}</div>`;
+        }
+
+        html += `
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+
+        // Store current month/year for navigation
+        container.dataset.year = year;
+        container.dataset.month = month;
+    }
+
+    function previousMonth(btn) {
+        const container = document.getElementById('calendar');
+        let year = parseInt(container.dataset.year);
+        let month = parseInt(container.dataset.month);
+        
+        month--;
+        if (month < 0) {
+            month = 11;
+            year--;
+        }
+        
+        const selectedDate = '{{ selected_date }}';
+        renderCalendar(year, month, selectedDate, container);
+    }
+
+    function nextMonth(btn) {
+        const container = document.getElementById('calendar');
+        let year = parseInt(container.dataset.year);
+        let month = parseInt(container.dataset.month);
+        
+        month++;
+        if (month > 11) {
+            month = 0;
+            year++;
+        }
+        
+        const selectedDate = '{{ selected_date }}';
+        renderCalendar(year, month, selectedDate, container);
+    }
+
+    function filterByDate(dateStr) {
+        window.location.href = `{{ url_for('logs') }}?date=${dateStr}`;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,531 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Sam's Checkout System{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/checkout.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<!-- Clock Display -->
+<div class="clock-container">
+    <div class="clock-display">
+        <span id="current-time">--:--:-- --</span>
+        <span id="current-date" class="ms-3">--/--/----</span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="form-card">
+            <h2>Add Items to Cart</h2>
+            
+            <!-- Search Box -->
+            <div class="checkout-search mb-3">
+                <input type="text" id="search-input" class="form-control" placeholder="Search items, services...">
+            </div>
+            
+            <!-- Scrollable Items Container -->
+            <div class="items-container">
+            <!-- Items Sections -->
+            <!-- Fridge Items Section -->
+            <div class="section">
+                <h4>Fridge Items</h4>
+                {% set fridge_items = items|selectattr('type', 'equalto', 'fridge')|list %}
+                {% if fridge_items %}
+                    <div class="items-grid">
+                        {% for item in fridge_items %}
+                            <div class="item-card">
+                                <div class="item-info">
+                                    <strong>{{ item['name'] }}</strong>
+                                    <div class="item-price">{% if item['price'] %}${{ "%.2f"|format(item['price'] / 100) }}{% else %}—{% endif %}</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-primary add-item-btn" 
+                                        data-item-id="{{ item['iid'] }}" 
+                                        data-item-name="{{ item['name'] }}" 
+                                        data-item-price="{{ item['price'] }}">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No fridge items available.</p>
+                {% endif %}
+            </div>
+
+            <!-- Shuttles Items Section -->
+            <div class="section">
+                <h4>Shuttles</h4>
+                {% set shuttle_items = items|selectattr('type', 'equalto', 'shuttles')|list %}
+                {% if shuttle_items %}
+                    <div class="items-grid">
+                        {% for item in shuttle_items %}
+                            <div class="item-card">
+                                <div class="item-info">
+                                    <strong>{{ item['name'] }}</strong>
+                                    <div class="item-price">{% if item['price'] %}${{ "%.2f"|format(item['price'] / 100) }}{% else %}—{% endif %}</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-primary add-item-btn" 
+                                        data-item-id="{{ item['iid'] }}" 
+                                        data-item-name="{{ item['name'] }}" 
+                                        data-item-price="{{ item['price'] }}">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No shuttles available.</p>
+                {% endif %}
+            </div>
+
+            <!-- Physical Items Section -->
+            <div class="section">
+                <h4>Physical Items</h4>
+                {% set physical_items = items|selectattr('type', 'equalto', 'physical')|list %}
+                {% if physical_items %}
+                    <div class="items-grid">
+                        {% for item in physical_items %}
+                            <div class="item-card">
+                                <div class="item-info">
+                                    <strong>{{ item['name'] }}</strong>
+                                    <div class="item-price">{% if item['price'] %}${{ "%.2f"|format(item['price'] / 100) }}{% else %}—{% endif %}</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-primary add-item-btn" 
+                                        data-item-id="{{ item['iid'] }}" 
+                                        data-item-name="{{ item['name'] }}" 
+                                        data-item-price="{{ item['price'] }}">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No physical items available.</p>
+                {% endif %}
+            </div>
+
+            <!-- Hire Items Section -->
+            <div class="section">
+                <h4>Hire Items</h4>
+                {% set hire_items = items|selectattr('type', 'equalto', 'hire')|list %}
+                {% if hire_items %}
+                    <div class="items-grid">
+                        {% for item in hire_items %}
+                            <div class="item-card">
+                                <div class="item-info">
+                                    <strong>{{ item['name'] }}</strong>
+                                    <div class="item-price">{% if item['price'] %}${{ "%.2f"|format(item['price'] / 100) }}{% else %}—{% endif %}</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-primary add-item-btn" 
+                                        data-item-id="{{ item['iid'] }}" 
+                                        data-item-name="{{ item['name'] }}" 
+                                        data-item-price="{{ item['price'] }}">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No hire items available.</p>
+                {% endif %}
+            </div>
+
+            <!-- Strings Section -->
+            <div class="section">
+                <h4>Stringing Services</h4>
+                {% if strings %}
+                    <div class="items-grid">
+                        {% for string in strings %}
+                            <div class="item-card">
+                                <div class="item-info">
+                                    <strong>{{ string['string_type'] }}</strong>
+                                    <div class="price-row">
+                                        <span>Regular: {% if string['string_price'] %}${{ "%.2f"|format(string['string_price'] / 100) }}{% else %}—{% endif %}</span>
+                                        {% if string['member_price'] %}
+                                            <span>Member: ${{ "%.2f"|format(string['member_price'] / 100) }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-primary add-string-btn w-100" 
+                                        data-string-id="{{ string['uid'] }}" 
+                                        data-string-name="{{ string['string_type'] }}" 
+                                        data-string-regular="{{ string['string_price'] }}" 
+                                        data-string-member="{{ string['member_price'] }}">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No string services available.</p>
+                {% endif %}
+            </div>
+
+            <!-- Walk-In Service Section -->
+            <div class="section">
+                <h4>Walk-In Service <span class="badge {{ walkin.badge_color }}">{{ walkin.period }}</span></h4>
+                <div class="walkin-info">
+                    <p class="text-muted"><small>Price automatically determined by current time</small></p>
+                </div>
+                <div class="items-grid">
+                    <div class="item-card">
+                        <div class="item-info">
+                            <strong>Badminton/Pickleball</strong>
+                            <div class="item-price">{{ walkin.price_display }}</div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-success w-100" id="walkin-regular-btn" 
+                                data-walkin-price="{{ walkin.price if walkin.is_peak else walkin.price_offpeak }}"
+                                data-walkin-period="{{ walkin.period }}">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <!-- End Scrollable Items Container -->
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="table-card sticky-card">
+            <h2>Cart</h2>
+            
+            <div class="member-toggle mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="is-member" value="true">
+                    <label class="form-check-label" for="is-member">
+                        <strong>Member Pricing</strong>
+                    </label>
+                </div>
+            </div>
+            
+            <div id="cart-items-container">
+                <p class="text-muted">Cart is empty</p>
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <label for="discount-input">Discount:</label>
+                    <div class="discount-input-group">
+                        <input type="number" id="discount-input" class="form-control" placeholder="0.00" min="0" step="0.01">
+                        <span>$</span>
+                    </div>
+                </div>
+                <div class="summary-row total-row">
+                    <strong>Total:</strong>
+                    <strong id="total">$0.00</strong>
+                </div>
+            </div>
+
+            <div class="cart-actions">
+                <button class="btn btn-primary btn-lg w-100" id="checkout-btn" disabled>Complete Purchase</button>
+                <button class="btn btn-secondary btn-sm w-100" id="clear-cart-btn">Clear Cart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Purchase</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you ready to complete this purchase?</p>
+                <div class="modal-summary">
+                    <div><strong>Items:</strong> <span id="modal-items-count">0</span></div>
+                    <div><strong>Total:</strong> <span id="modal-total">$0.00</span></div>
+                </div>
+                <div class="payment-type-section mt-4">
+                    <label><strong>Payment Method:</strong></label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment-type" id="payment-cash" value="cash">
+                        <label class="form-check-label" for="payment-cash">
+                            Cash
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="payment-type" id="payment-card" value="card" checked>
+                        <label class="form-check-label" for="payment-card">
+                            Card
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirm-purchase-btn">Confirm Purchase</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize cart from session data
+    let cart = {{ session_cart|tojson }};
+    
+    // Update clock display
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
+        
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const year = now.getFullYear();
+        
+        document.getElementById('current-time').textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+        document.getElementById('current-date').textContent = `${day}/${month}/${year}`;
+    }
+    
+    // Update clock immediately and then every second
+    updateClock();
+    setInterval(updateClock, 1000);
+    
+    // Search functionality
+    document.getElementById('search-input').addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const itemCards = document.querySelectorAll('.item-card');
+        
+        itemCards.forEach(card => {
+            const itemName = card.querySelector('.item-info strong')?.textContent.toLowerCase() || '';
+            const isVisible = itemName.includes(searchTerm);
+            card.style.display = isVisible ? '' : 'none';
+        });
+    });
+    
+    // Set up walk-in button with server-side pricing
+    document.getElementById('walkin-regular-btn').addEventListener('click', function() {
+        const item = {
+            id: 'walkin',
+            name: `Walk-In (${this.dataset.walkinPeriod})`,
+            price: parseInt(this.dataset.walkinPrice),
+            quantity: 1,
+            type: 'walkin'
+        };
+        cart.push(item);
+        updateCart();
+    });
+    
+    // Add item to cart
+    document.querySelectorAll('.add-item-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const item = {
+                id: this.dataset.itemId,
+                name: this.dataset.itemName,
+                price: parseInt(this.dataset.itemPrice),
+                quantity: 1,
+                type: 'item'
+            };
+            cart.push(item);
+            updateCart();
+        });
+    });
+    
+    // Add string service to cart
+    function attachStringButtonListeners() {
+        document.querySelectorAll('.add-string-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const isMember = document.getElementById('is-member').checked;
+                const regularPrice = parseInt(this.dataset.stringRegular);
+                const memberPrice = parseInt(this.dataset.stringMember);
+                
+                const price = (isMember && memberPrice) ? memberPrice : regularPrice;
+                const name = this.dataset.stringName + (isMember && memberPrice ? ' (Member)' : '');
+                
+                const service = {
+                    id: this.dataset.stringId,
+                    name: this.dataset.stringName,
+                    price: price,
+                    quantity: 1,
+                    regularPrice: regularPrice,
+                    memberPrice: memberPrice,
+                    type: 'string'
+                };
+                cart.push(service);
+                updateCart();
+            });
+        });
+    }
+    
+    // Attach listeners initially
+    attachStringButtonListeners();
+    
+    // Re-attach listeners when member checkbox changes
+    document.getElementById('is-member').addEventListener('change', function() {
+        // Update existing items in cart
+        const isMember = this.checked;
+        cart.forEach(item => {
+            if (item.type === 'string' && item.regularPrice) {
+                if (isMember && item.memberPrice) {
+                    item.price = item.memberPrice;
+                    item.name = item.name.replace(' (Member)', '') + ' (Member)';
+                } else {
+                    item.price = item.regularPrice;
+                    item.name = item.name.replace(' (Member)', '');
+                }
+            }
+        });
+        
+        // Re-attach listeners for new additions
+        attachStringButtonListeners();
+        updateCart();
+    });
+    
+    // Update cart display
+    function updateCart() {
+        const container = document.getElementById('cart-items-container');
+        
+        if (cart.length === 0) {
+            container.innerHTML = '<p class="text-muted">Cart is empty</p>';
+            document.getElementById('checkout-btn').disabled = true;
+        } else {
+            let html = '<div class="cart-list">';
+            cart.forEach((item, index) => {
+                const itemName = item.name || item.description || 'Unknown Item';
+                const itemTotal = item.price * (item.quantity || 1);
+                html += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <strong>${itemName}</strong>
+                            <div class="cart-item-price">$${(item.price / 100).toFixed(2)}</div>
+                        </div>
+                        <div class="cart-item-controls">
+                            <div class="quantity-controls">
+                                <button class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(${index}, -1)">−</button>
+                                <span class="quantity-display">${item.quantity || 1}</span>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(${index}, 1)">+</button>
+                            </div>
+                            <div class="cart-item-total">Total: $${(itemTotal / 100).toFixed(2)}</div>
+                            <button class="btn btn-sm btn-danger" onclick="removeFromCart(${index})">Remove</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+            document.getElementById('checkout-btn').disabled = false;
+        }
+        
+        updateTotals();
+    }
+    
+    // Change item quantity
+    function changeQuantity(index, change) {
+        if (cart[index]) {
+            cart[index].quantity = (cart[index].quantity || 1) + change;
+            // Don't allow quantity to go below 1
+            if (cart[index].quantity < 1) {
+                removeFromCart(index);
+            } else {
+                updateCart();
+            }
+        }
+    }
+    
+    // Remove item from cart
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCart();
+    }
+    
+    // Update totals
+    function updateTotals() {
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+        const discount = parseFloat(document.getElementById('discount-input').value) || 0;
+        const discountCents = Math.round(discount * 100);
+        const total = Math.max(0, subtotal - discountCents);
+        
+        document.getElementById('subtotal').textContent = '$' + (subtotal / 100).toFixed(2);
+        document.getElementById('total').textContent = '$' + (total / 100).toFixed(2);
+        
+        // Update modal - count total items including quantities
+        const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+        document.getElementById('modal-items-count').textContent = totalItems;
+        document.getElementById('modal-total').textContent = '$' + (total / 100).toFixed(2);
+    }
+    
+    // Discount input listener
+    document.getElementById('discount-input').addEventListener('input', updateTotals);
+    
+    // Clear cart
+    document.getElementById('clear-cart-btn').addEventListener('click', function() {
+        if (cart.length > 0 && confirm('Clear the cart?')) {
+            cart = [];
+            updateCart();
+        }
+    });
+    
+    // Show confirmation modal
+    document.getElementById('checkout-btn').addEventListener('click', function() {
+        const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        confirmModal.show();
+    });
+    
+    // Confirm purchase
+    document.getElementById('confirm-purchase-btn').addEventListener('click', function() {
+        const discount = parseFloat(document.getElementById('discount-input').value) || 0;
+        const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+        const total = Math.max(0, subtotal - Math.round(discount * 100));
+        
+        // Get selected payment type
+        const paymentType = document.querySelector('input[name="payment-type"]:checked').value;
+        const paymentBit = paymentType === 'card' ? 1 : 0;  // 1 for card, 0 for cash
+        
+        // Create form to submit
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("complete_checkout") }}';
+        
+        const cartInput = document.createElement('input');
+        cartInput.type = 'hidden';
+        cartInput.name = 'cart_data';
+        cartInput.value = JSON.stringify(cart);
+        
+        const subtotalInput = document.createElement('input');
+        subtotalInput.type = 'hidden';
+        subtotalInput.name = 'subtotal';
+        subtotalInput.value = subtotal;
+        
+        const discountInput = document.createElement('input');
+        discountInput.type = 'hidden';
+        discountInput.name = 'discount';
+        discountInput.value = Math.round(discount * 100);
+        
+        const totalInput = document.createElement('input');
+        totalInput.type = 'hidden';
+        totalInput.name = 'total';
+        totalInput.value = total;
+        
+        const paymentInput = document.createElement('input');
+        paymentInput.type = 'hidden';
+        paymentInput.name = 'cash_card';
+        paymentInput.value = paymentBit;
+        
+        form.appendChild(cartInput);
+        form.appendChild(subtotalInput);
+        form.appendChild(discountInput);
+        form.appendChild(totalInput);
+        form.appendChild(paymentInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    });
+    
+    // Initialize cart display on page load
+    updateCart();
+</script>
+{% endblock %}

@@ -1,0 +1,449 @@
+/* Logs Page Styles */
+
+.logs-container {
+    padding: 20px 0;
+}
+
+.calendar-card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.calendar-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Calendar Widget Styles */
+.calendar-widget {
+    margin-bottom: 20px;
+}
+
+.calendar-month {
+    width: 100%;
+}
+
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.month-year {
+    flex: 1;
+    text-align: center;
+}
+
+.month-text {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333;
+}
+
+.btn-nav {
+    background: #f0f0f0;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-nav:hover {
+    background: #e0e0e0;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.weekday {
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #666;
+    padding: 8px 0;
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #666;
+    background: #f9f9f9;
+    transition: all 0.2s;
+}
+
+.day.other-month {
+    color: #ccc;
+    background: transparent;
+}
+
+.day.has-data {
+    background: #e8f4f8;
+    color: #0066cc;
+    font-weight: 600;
+}
+
+.day.has-data:hover {
+    background: #d0e8f0;
+}
+
+.day.today {
+    border: 2px solid #0066cc;
+}
+
+.day.selected {
+    background: #0066cc;
+    color: white;
+    font-weight: 600;
+}
+
+/* Available Dates List */
+.available-dates h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.dates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.date-item {
+    padding: 8px 12px;
+    border-radius: 4px;
+    background: #f5f5f5;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+    font-size: 0.95rem;
+}
+
+.date-item:hover {
+    background: #efefef;
+    border-left-color: #0066cc;
+}
+
+.date-item.active {
+    background: #0066cc;
+    color: white;
+    border-left-color: #0066cc;
+    font-weight: 600;
+}
+
+.date-text {
+    display: block;
+}
+
+/* Logs Display */
+.logs-card {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.logs-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.logs-header .badge {
+    font-size: 0.95rem;
+    padding: 6px 12px;
+}
+
+.logs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.log-entry {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 18px;
+    background: #fafafa;
+    transition: all 0.2s;
+}
+
+.log-entry:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #d0d0d0;
+}
+
+.log-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.log-datetime {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.log-date {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+}
+
+.log-time {
+    color: #666;
+    font-size: 0.95rem;
+    background: #e8e8e8;
+    padding: 3px 8px;
+    border-radius: 3px;
+}
+
+.log-total {
+    font-size: 1.1rem;
+    color: #0066cc;
+}
+
+.log-total strong {
+    font-size: 1.2rem;
+    color: #004499;
+}
+
+.log-payment {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.payment-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.badge-card {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.badge-cash {
+    background-color: #f1f8e9;
+    color: #558b2f;
+}
+
+.log-items {
+    margin-bottom: 15px;
+}
+
+.log-items h6 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: white;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+}
+
+.item-row:last-child {
+    border-bottom: none;
+}
+
+.item-name {
+    color: #333;
+    font-weight: 500;
+}
+
+.item-price {
+    color: #666;
+    font-weight: 600;
+}
+
+.log-summary {
+    background: white;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.summary-row.discount {
+    color: #d9534f;
+}
+
+.summary-row.discount span:last-child {
+    color: #d9534f;
+    font-weight: 600;
+}
+
+.summary-row.total-row {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 10px;
+    margin-top: 8px;
+    font-size: 1.05rem;
+    color: #333;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    color: #999;
+}
+
+/* Responsive Design */
+@media (max-width: 991px) {
+    .logs-container {
+        padding: 10px 0;
+    }
+
+    .logs-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .calendar-card {
+        margin-bottom: 20px;
+    }
+
+    .dates-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        max-height: none;
+    }
+
+    .date-item {
+        margin-bottom: 4px;
+    }
+}
+
+@media (max-width: 576px) {
+    .logs-card {
+        padding: 15px;
+    }
+
+    .logs-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .log-entry {
+        padding: 12px;
+    }
+
+    .log-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .log-datetime {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .item-row {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .dates-list {
+        grid-template-columns: 1fr;
+    }
+
+    .calendar-nav {
+        gap: 5px;
+    }
+
+    .month-text {
+        font-size: 0.9rem;
+    }
+}
+
+/* Scrollbar Styling */
+.dates-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dates-list::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+.dates-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.dates-list::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}

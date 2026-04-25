@@ -1,0 +1,7 @@
+Flask==3.1.2
+Werkzeug==3.1.5
+Python==3.15.0
+commbank-api-client==1.0.1
+asyncio==4.0.0
+beautifulsoup4==4.14.3
+aiohttp==3.13.5

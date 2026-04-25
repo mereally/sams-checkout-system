@@ -1,0 +1,48 @@
+/* Strings Page Styling */
+.string-table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+/* Scrollbar styling */
+.string-table-wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.string-table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.string-table-wrapper::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.string-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.string-table-wrapper table {
+    margin-bottom: 0;
+}
+
+.search-box {
+    margin-bottom: 15px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.search-box input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    outline: none;
+}

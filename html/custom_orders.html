@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Custom Orders - Sam's Checkout System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="form-card">
+            <h2>Add Custom Order to Cart</h2>
+            <form method="POST" action="{{ url_for('add_custom_order_direct') }}">
+                <div class="mb-3">
+                    <label for="description" class="form-label">Order Description <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="description" name="description" rows="4" placeholder="Describe the custom order..." required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" placeholder="0.00" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add to Cart</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

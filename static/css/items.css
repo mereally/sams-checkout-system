@@ -1,0 +1,71 @@
+/* Items Page Styling - Tab Navigation Only */
+.nav-tabs .nav-link {
+    color: #666 !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    padding: 0.75rem 1.5rem !important;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd !important;
+    border-bottom: 3px solid #0d6efd !important;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #0d6efd !important;
+}
+
+/* Items table wrapper styling */
+.items-table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    min-width: 0;
+}
+
+/* Scrollbar styling */
+.items-table-wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.items-table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.items-table-wrapper::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.items-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.items-table-wrapper table {
+    margin-bottom: 0;
+    min-width: 100%;
+}
+
+.search-box {
+    margin-bottom: 15px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.search-box input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    outline: none;
+}
+
+
