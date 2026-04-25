@@ -1,0 +1,23 @@
+iid,type,name,price
+0,fridge,Gatorade,500
+2,fridge,Powerade,500
+3,fridge,Beer,600
+4,fridge,Bundaberg,500
+5,fridge,can drink,300
+6,fridge,pop top,250
+7,fridge,water bottle,250
+12,fridge,ice cream,400
+13,fridge,ice block,100
+14,hire,Racquet,500
+15,physical,socks,1000
+16,shuttles,Tournament grade,5699
+17,shuttles,Club Competition grade,4299
+18,shuttles,Social grade,3799
+19,shuttles,Plastic ,600
+20,physical,Thin Grip,600
+21,physical,Towel Grip,1000
+22,physical,Thick Pu Grip,1000
+23,physical,Shoes,7500
+24,physical,Unstrung Racquet,6998
+25,physical,Strung Racquet,9999
+26,physical,Kids Racquet,2999
