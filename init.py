@@ -33,6 +33,18 @@ def create_database():
             username TEXT NOT NULL,
             password TEXT NOT NULL
         );"""
+        #coaching
+        """ CREATE TABLE IF NOT EXISTS coaching
+        (
+            cid INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            coach TEXT NOT NULL,
+            coaching_time TEXT NOT NULL,
+            phone_number INTEGER NOT NULL,
+            total_payment INTEGER,
+            coaching_type TEXT CHECK(coaching_type IN ('private', 'group')) NOT NULL,
+            member BIT NOT NULL
+        );"""
         #custom orders
         """ CREATE TABLE IF NOT EXISTS custom_orders
         (
