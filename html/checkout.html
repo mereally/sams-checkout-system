@@ -200,6 +200,32 @@
                     </label>
                 </div>
             </div>
+
+            {% if pending_custom_order %}
+            <div class="alert alert-info alert-dismissible fade show mb-3" role="alert">
+                <h5>Custom Order Available</h5>
+                <p class="mb-2"><strong>{{ pending_custom_order.description }}</strong></p>
+                <p class="mb-3">Price: <strong>${{ "%.2f"|format(pending_custom_order.price / 100) }}</strong></p>
+                <button type="button" class="btn btn-sm btn-info" id="add-pending-custom-btn">Add to Cart</button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <script>
+                const pendingCustomOrder = {{ pending_custom_order|tojson|default('null') }};
+                document.getElementById('add-pending-custom-btn')?.addEventListener('click', function() {
+                    const item = {
+                        id: pendingCustomOrder.id,
+                        name: pendingCustomOrder.description,
+                        price: pendingCustomOrder.price,
+                        quantity: 1,
+                        type: 'custom_order',
+                        description: pendingCustomOrder.description
+                    };
+                    cart.push(item);
+                    updateCart();
+                    this.closest('.alert').style.display = 'none';
+                });
+            </script>
+            {% endif %}
             
             <div id="cart-items-container">
                 <p class="text-muted">Cart is empty</p>

@@ -23,8 +23,31 @@
                         <input type="text" class="form-control" id="coach" name="coach" required>
                     </div>
                     <div class="mb-3">
-                        <label for="coaching_time" class="form-label">Coaching Time</label>
-                        <input type="text" class="form-control" id="coaching_time" name="coaching_time" placeholder="e.g., Mon/Wed/Fri 3-4 PM">
+                        <label class="form-label">Coaching Schedule</label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label for="coaching_date" class="form-label small">Date</label>
+                                <input type="date" class="form-control form-control-sm" id="coaching_date" name="coaching_date">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="coaching_hour" class="form-label small">Hour</label>
+                                <select class="form-select form-select-sm" id="coaching_hour" name="coaching_hour">
+                                    <option value="">--</option>
+                                    {% for h in range(0, 24) %}
+                                    <option value="{{ h }}">{{ "%02d"|format(h) }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="coaching_minute" class="form-label small">Min</label>
+                                <select class="form-select form-select-sm" id="coaching_minute" name="coaching_minute">
+                                    <option value="">--</option>
+                                    {% for m in range(0, 60, 15) %}
+                                    <option value="{{ m }}">{{ "%02d"|format(m) }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="phone_number" class="form-label">Phone Number</label>
@@ -49,136 +72,355 @@
             </div>
         </div>
 
-        <!-- Search Section -->
+        <!-- Members List Section -->
         <div class="col-lg-7">
             <div class="search-card">
-                <h2>Search Coaching Members</h2>
-                <form method="GET" class="mb-4">
-                    <div class="input-group">
-                        <input type="text" class="form-control search-input" name="search" 
-                               placeholder="Search by name..." value="{{ search_query }}">
-                        <button class="btn btn-primary" type="submit">Search</button>
-                        {% if search_query %}
-                            <a href="{{ url_for('coaching') }}" class="btn btn-secondary">Clear</a>
-                        {% endif %}
-                    </div>
-                </form>
-
-                <!-- Search Results -->
-                {% if search_result is not none %}
-                    <div class="search-results">
-                        {% if search_result %}
-                            <h4 class="results-title">Found {{ search_result|length }} member(s)</h4>
-                            
+                <h2>Coaching Members</h2>
+                
+                <!-- Search Box -->
+                <div class="checkout-search mb-3">
+                    <input type="text" id="member-search-input" class="form-control" placeholder="Search members...">
+                </div>
+                
+                <!-- Members Grid -->
+                <div id="members-grid-container">
+                    {% if search_result %}
+                        <div class="members-grid">
                             {% for result in search_result %}
-                            <div class="member-card">
-                                <div class="member-header">
-                                    <div class="member-info">
-                                        <h5 class="member-name">{{ result['person']['name'] }}</h5>
-                                        <p class="member-meta">
-                                            <span class="badge" style="background-color: {% if result['person']['coaching_type'] == 'private' %}#e83e8c{% else %}#17a2b8{% endif %}">
-                                                {{ result['person']['coaching_type']|upper }}
-                                            </span>
-                                            {% if result['person']['member'] %}
-                                                <span class="badge bg-success">Member</span>
-                                            {% endif %}
-                                        </p>
-                                    </div>
-                                    <div class="member-actions">
-                                        <form method="POST" action="{{ url_for('delete_coaching_member', person_id=result['person']['cid']) }}" style="display: inline;">
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this member?')">Delete</button>
-                                        </form>
-                                    </div>
-                                </div>
-
-                                <div class="member-details">
-                                    <div class="detail-row">
-                                        <span class="detail-label">Coach:</span>
-                                        <span class="detail-value">{{ result['person']['coach'] }}</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Coaching Time:</span>
-                                        <span class="detail-value">{{ result['person']['coaching_time'] or 'Not specified' }}</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Phone:</span>
-                                        <span class="detail-value">{{ result['person']['phone_number'] or 'Not provided' }}</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Total Paid:</span>
-                                        <span class="detail-value amount">${{ "%.2f"|format(result['total_paid'] / 100) }}</span>
-                                    </div>
-                                    <div class="detail-row">
-                                        <span class="detail-label">Payment Count:</span>
-                                        <span class="detail-value">{{ result['payment_count'] }} payment(s)</span>
-                                    </div>
-                                </div>
-
-                                <!-- Payment History -->
-                                {% if result['payments'] %}
-                                <div class="payment-history">
-                                    <h6>Recent Payments</h6>
-                                    <div class="payments-list">
-                                        {% for payment in result['payments'][:5] %}
-                                        <div class="payment-item">
-                                            <span class="payment-date">{{ payment['payment_date'][:10] }}</span>
-                                            <span class="payment-amount">${{ "%.2f"|format(payment['amount'] / 100) }}</span>
-                                            <span class="payment-method {% if payment['cash_card'] == 1 %}card{% else %}cash{% endif %}">
-                                                {% if payment['cash_card'] == 1 %}💳{% else %}💵{% endif %}
-                                            </span>
-                                        </div>
-                                        {% endfor %}
-                                        {% if result['payment_count'] > 5 %}
-                                        <div class="payment-item text-muted">
-                                            ... and {{ result['payment_count'] - 5 }} more payment(s)
-                                        </div>
+                            <div class="member-item-card" id="member-item-{{ result['person']['cid'] }}">
+                                <div class="member-item-info">
+                                    <strong>{{ result['person']['name'] }}</strong>
+                                    <div class="member-item-meta">
+                                        <span class="badge" style="background-color: {% if result['person']['coaching_type'] == 'private' %}#e83e8c{% else %}#17a2b8{% endif %}; font-size: 0.75rem;">
+                                            {{ result['person']['coaching_type']|upper }}
+                                        </span>
+                                        {% if result['person']['member'] %}
+                                            <span class="badge bg-success" style="font-size: 0.75rem;">Member</span>
                                         {% endif %}
                                     </div>
-                                </div>
-                                {% endif %}
-
-                                <!-- Add Payment Form -->
-                                <div class="add-payment-section">
-                                    <form method="POST" action="{{ url_for('add_coaching_payment', person_id=result['person']['cid']) }}" class="payment-form">
-                                        <input type="hidden" name="search" value="{{ search_query }}">
-                                        <h6>Record Payment</h6>
-                                        <div class="row g-2">
-                                            <div class="col-md-6">
-                                                <input type="number" class="form-control form-control-sm" name="amount" 
-                                                       placeholder="Amount ($)" step="0.01" min="0" required>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <select class="form-select form-select-sm" name="payment_method">
-                                                    <option value="0">💵 Cash</option>
-                                                    <option value="1">💳 Card</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <button type="submit" class="btn btn-sm btn-success w-100">Add Payment</button>
-                                            </div>
+                                    {% set debt_credit = result.get('debt_credit', 0) %}
+                                    {% if debt_credit != 0 %}
+                                        <div class="member-balance" style="font-size: 0.85rem; margin-top: 4px;">
+                                            {% if debt_credit > 0 %}
+                                                <span class="text-info">+${{ "%.2f"|format(debt_credit / 100) }}</span>
+                                            {% else %}
+                                                <span class="text-warning">-${{ "%.2f"|format(abs(debt_credit) / 100) }}</span>
+                                            {% endif %}
                                         </div>
-                                        <div class="mt-2">
-                                            <input type="text" class="form-control form-control-sm" name="notes" 
-                                                   placeholder="Notes (optional)">
-                                        </div>
-                                    </form>
+                                    {% endif %}
                                 </div>
+                                <button type="button" class="btn btn-sm btn-primary view-member-btn" 
+                                        data-member-id="{{ result['person']['cid'] }}">
+                                    View Details
+                                </button>
                             </div>
                             {% endfor %}
-                        {% else %}
-                            <div class="alert alert-info">
-                                No members found matching "{{ search_query }}"
-                            </div>
-                        {% endif %}
-                    </div>
-                {% else %}
-                    <div class="alert alert-info">
-                        Enter a member name to search for coaching records
-                    </div>
-                {% endif %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No coaching members found.</p>
+                    {% endif %}
+                </div>
             </div>
+        </div>
+        
+        <!-- Member Details Section (initially hidden) -->
+        <div class="col-lg-7" id="member-details-section" style="display: none;">
+            <div class="search-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 id="details-member-name">Member Details</h2>
+                    <button type="button" class="btn btn-secondary btn-sm" id="back-to-grid-btn">← Back to List</button>
+                </div>
+                
+                <div id="member-details-content">
+                    <!-- Details will be populated here -->
+                </div>
+            </div>
+        </div>
+                          
+</div>
+
+<!-- Edit Member Modal -->
+<div class="modal fade" id="editMemberModal" tabindex="-1" aria-labelledby="editMemberModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editMemberModalLabel">Edit Coaching Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editMemberForm" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="search" value="{{ search_query }}">
+                    
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">Member Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="editName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCoach" class="form-label">Coach Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="editCoach" name="coach" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Coaching Schedule</label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label for="editCoachingDate" class="form-label small">Date</label>
+                                <input type="date" class="form-control form-control-sm" id="editCoachingDate" name="coaching_date">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="editCoachingHour" class="form-label small">Hour</label>
+                                <select class="form-select form-select-sm" id="editCoachingHour" name="coaching_hour">
+                                    <option value="">--</option>
+                                    {% for h in range(0, 24) %}
+                                    <option value="{{ h }}">{{ "%02d"|format(h) }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="editCoachingMinute" class="form-label small">Min</label>
+                                <select class="form-select form-select-sm" id="editCoachingMinute" name="coaching_minute">
+                                    <option value="">--</option>
+                                    {% for m in range(0, 60, 15) %}
+                                    <option value="{{ m }}">{{ "%02d"|format(m) }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPhone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="editPhone" name="phone_number">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCoachingType" class="form-label">Coaching Type <span class="text-danger">*</span></label>
+                        <select class="form-select" id="editCoachingType" name="coaching_type" required>
+                            <option value="">Select a type...</option>
+                            <option value="private">Private</option>
+                            <option value="group">Group</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="editMember" name="member">
+                        <label class="form-check-label" for="editMember">
+                            Is Member
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 {% endblock %}
+
+{% block extra_js %}
+<script>
+    // Store all members data
+    const allMembers = {{ search_result|tojson }};
+
+    // Search functionality for members
+    document.getElementById('member-search-input').addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const memberItems = document.querySelectorAll('.member-item-card');
+        
+        memberItems.forEach(card => {
+            const memberName = card.querySelector('strong').textContent.toLowerCase();
+            const isVisible = memberName.includes(searchTerm);
+            card.style.display = isVisible ? '' : 'none';
+        });
+    });
+
+    // View member details
+    document.querySelectorAll('.view-member-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const memberId = parseInt(this.dataset.memberId);
+            const memberData = allMembers.find(m => m.person.cid === memberId);
+            
+            if (memberData) {
+                showMemberDetails(memberData);
+            }
+        });
+    });
+
+    function showMemberDetails(memberData) {
+        const member = memberData.person;
+        const payments = memberData.payments || [];
+        const debtCredit = memberData.debt_credit || 0;
+
+        let detailsHtml = `
+            <div class="member-details">
+                <div class="detail-row">
+                    <span class="detail-label">Coach:</span>
+                    <span class="detail-value">${member.coach}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Coaching Type:</span>
+                    <span class="detail-value">
+                        <span class="badge" style="background-color: ${member.coaching_type === 'private' ? '#e83e8c' : '#17a2b8'}">
+                            ${member.coaching_type.toUpperCase()}
+                        </span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Coaching Time:</span>
+                    <span class="detail-value">
+                        ${member.coaching_date ? member.coaching_date : 'Date TBD'} 
+                        ${member.coaching_hour ? String(member.coaching_hour).padStart(2, '0') + ':' + String(member.coaching_minute || 0).padStart(2, '0') : ''}
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone:</span>
+                    <span class="detail-value">${member.phone_number || 'Not provided'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Total Paid:</span>
+                    <span class="detail-value amount">$${(memberData.total_paid / 100).toFixed(2)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Balance:</span>
+                    <span class="detail-value ${debtCredit > 0 ? 'text-info' : debtCredit < 0 ? 'text-warning' : ''}">
+                        ${debtCredit > 0 ? '+' : ''}$${(debtCredit / 100).toFixed(2)}
+                    </span>
+                </div>
+            </div>
+        `;
+
+        // Payment History
+        if (payments.length > 0) {
+            detailsHtml += `
+                <div class="payment-history">
+                    <h6>Recent Payments</h6>
+                    <div class="payments-list">
+                        ${payments.slice(0, 10).map(payment => `
+                            <div class="payment-item">
+                                <span class="payment-date">${payment.payment_date.slice(0, 10)}</span>
+                                <span class="payment-amount">$${(payment.amount / 100).toFixed(2)}</span>
+                                <span class="payment-method">
+                                    ${payment.cash_card === 1 ? '💳' : '💵'}
+                                </span>
+                                ${payment.notes ? `<span class="payment-notes">${payment.notes}</span>` : ''}
+                            </div>
+                        `).join('')}
+                        ${payments.length > 10 ? `<div class="payment-item text-muted">... and ${payments.length - 10} more payment(s)</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Member Actions
+        detailsHtml += `
+            <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem;">
+                <button type="button" class="btn btn-sm btn-info edit-member-btn" 
+                        data-person-id="${member.cid}"
+                        data-name="${member.name}"
+                        data-coach="${member.coach}"
+                        data-coaching-date="${member.coaching_date || ''}"
+                        data-coaching-hour="${member.coaching_hour || ''}"
+                        data-coaching-minute="${member.coaching_minute || ''}"
+                        data-phone="${member.phone_number}"
+                        data-coaching-type="${member.coaching_type}"
+                        data-member="${member.member}"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#editMemberModal">
+                    Edit Member
+                </button>
+                <form method="POST" action="/coaching/${member.cid}/delete" style="display: inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this member?')">Delete</button>
+                </form>
+            </div>
+        `;
+
+        // Add Payment Form
+        detailsHtml += `
+            <div class="add-payment-section" style="margin-top: 1.5rem;">
+                <form method="POST" action="/coaching/${member.cid}/add-payment" class="payment-form">
+                    <h6>Record Payment</h6>
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <input type="number" class="form-control form-control-sm" name="amount" 
+                                   placeholder="Amount ($)" step="0.01" min="0" required>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select form-select-sm" name="cash_card" required>
+                                <option value="">Select payment method...</option>
+                                <option value="0">💵 Cash</option>
+                                <option value="1">💳 Card</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-sm btn-success w-100">Add Payment</button>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <input type="text" class="form-control form-control-sm" name="notes" 
+                               placeholder="Notes (optional)">
+                    </div>
+                </form>
+            </div>
+        `;
+
+        document.getElementById('details-member-name').textContent = member.name;
+        document.getElementById('member-details-content').innerHTML = detailsHtml;
+        
+        // Hide grid, show details
+        document.getElementById('members-grid-container').parentElement.parentElement.style.display = 'none';
+        document.getElementById('member-details-section').style.display = 'block';
+
+        // Re-attach edit button listener
+        const editBtn = document.querySelector('.edit-member-btn');
+        if (editBtn) {
+            editBtn.click = function(e) {
+                const personId = this.dataset.personId;
+                document.getElementById('editName').value = this.dataset.name;
+                document.getElementById('editCoach').value = this.dataset.coach;
+                document.getElementById('editCoachingDate').value = this.dataset.coachingDate;
+                document.getElementById('editCoachingHour').value = this.dataset.coachingHour;
+                document.getElementById('editCoachingMinute').value = this.dataset.coachingMinute;
+                document.getElementById('editPhone').value = this.dataset.phone;
+                document.getElementById('editCoachingType').value = this.dataset.coachingType;
+                document.getElementById('editMember').checked = this.dataset.member == 1;
+                
+                const form = document.getElementById('editMemberForm');
+                form.action = `/coaching/${personId}/edit`;
+            };
+        }
+    }
+
+    // Back to grid button
+    document.getElementById('back-to-grid-btn').addEventListener('click', function() {
+        document.getElementById('members-grid-container').parentElement.parentElement.style.display = 'block';
+        document.getElementById('member-details-section').style.display = 'none';
+    });
+
+    // Handle edit member modal
+    document.querySelectorAll('.edit-member-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const personId = this.dataset.personId;
+            const name = this.dataset.name;
+            const coach = this.dataset.coach;
+            const coachingDate = this.dataset.coachingDate;
+            const coachingHour = this.dataset.coachingHour;
+            const coachingMinute = this.dataset.coachingMinute;
+            const phone = this.dataset.phone;
+            const coachingType = this.dataset.coachingType;
+            const member = this.dataset.member;
+            
+            document.getElementById('editName').value = name;
+            document.getElementById('editCoach').value = coach;
+            document.getElementById('editCoachingDate').value = coachingDate;
+            document.getElementById('editCoachingHour').value = coachingHour;
+            document.getElementById('editCoachingMinute').value = coachingMinute;
+            document.getElementById('editPhone').value = phone;
+            document.getElementById('editCoachingType').value = coachingType;
+            document.getElementById('editMember').checked = member == 1;
+            
+            const form = document.getElementById('editMemberForm');
+            form.action = `/coaching/${personId}/edit`;
+        });
+    });
+</script>
+{% endblock %}
+

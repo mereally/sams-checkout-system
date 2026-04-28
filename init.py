@@ -39,9 +39,12 @@ def create_database():
             cid INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             coach TEXT NOT NULL,
-            coaching_time TEXT NOT NULL,
+            coaching_date TEXT,
+            coaching_hour INTEGER,
+            coaching_minute INTEGER,
             phone_number INTEGER NOT NULL,
             total_payment INTEGER,
+            debt_credit INTEGER DEFAULT 0,
             coaching_type TEXT CHECK(coaching_type IN ('private', 'group')) NOT NULL,
             member BIT NOT NULL
         );"""
